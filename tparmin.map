@@ -1,0 +1,62 @@
+MPLINK 4.48, Linker
+Linker Map File - Created Sat Jan 25 03:58:33 2020
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x00014c
+   .config_2007_TPARMIN.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x0000a9      
+                            0x002007    0x002007      
+            168 out of 1093 program addresses used, program memory utilization is 15%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+             CONVERT_7SEG   0x00007d    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                    START   0x00008d    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                   START2   0x000095    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                   boucle   0x000020    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                carrycent   0x000074    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                carrydizi   0x000070    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                     init   0x00005a    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                    init1   0x000060    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                    inter   0x00000d    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                 interRB0   0x00004a    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                intertmr0   0x000010    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                     slee   0x000095    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                     temp   0x00007a    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                    tempo   0x000078    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    inter   0x00000d    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                intertmr0   0x000010    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                   boucle   0x000020    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                 interRB0   0x00004a    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                     init   0x00005a    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                    init1   0x000060    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                carrydizi   0x000070    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                carrycent   0x000074    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                    tempo   0x000078    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                     temp   0x00007a    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+             CONVERT_7SEG   0x00007d    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                    START   0x00008d    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                   START2   0x000095    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+                     slee   0x000095    program     static D:\Desktop\PROBLEM\Tparmin\tparmin.asm
+
+

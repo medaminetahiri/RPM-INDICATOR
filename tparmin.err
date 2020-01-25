@@ -1,0 +1,12 @@
+Warning[207] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 20 : Found label after column 1. (OPTIONVAL)
+Warning[207] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 21 : Found label after column 1. (INTERMASK)
+Warning[207] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 22 : Found label after column 1. (INTERBASE)
+Warning[207] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 23 : Found label after column 1. (OVERFLOW)
+Warning[207] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 24 : Found label after column 1. (OVERFLOWFFF)
+Message[305] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 145 : Using default destination of 1 (file).
+Message[305] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 151 : Using default destination of 1 (file).
+Message[302] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 164 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 183 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 184 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 185 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] D:\DESKTOP\PROBLEM\TPARMIN\TPARMIN.ASM 206 : Using default destination of 1 (file).

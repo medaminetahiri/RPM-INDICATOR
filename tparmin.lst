@@ -1,0 +1,534 @@
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;********************************************************************************
+                      00002 ;                                                                                                       
+                                                                                    *       
+                      00003 ;                                                                                                       
+                                                                                    *
+                      00004 ;                       PROJET AFFICHAGE MULTIPLIXE de NOMBRE DE TOURS PAR MINUTE           *
+                      00005 ;                                                                       D'UNE HELICE                    
+                                            *
+                      00006 ;                                                                                                       
+                                                                                    *
+                      00007 ;                                                                                                       
+                                                                                    *
+                      00008 ;********************************************************************************
+                      00009 ;                                                                                                       
+                                                                                    *       
+                      00010 ;                                                               TAHIRI MOHAMED AMINE                    
+                                                            *
+                      00011 ;                                                                                                       
+                                                                                    *
+                      00012 ;                                                                                                       
+                                                                                    *
+                      00013 ;********************************************************************************
+                      00014         
+                      00015         
+                      00016         LIST      p=16F84            ; Definition de processeur
+                      00017         #include <p16F84.inc>        ; Definitions de variables
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F84 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00206         LIST
+                      00018 
+2007   3FF2           00019         __CONFIG   _CP_OFF & _WDT_OFF & _PWRTE_ON & _HS_OSC
+Warning[207]: Found label after column 1. (OPTIONVAL)
+  00000005            00020         OPTIONVAL        EQU H'05'    ;    11000101
+Warning[207]: Found label after column 1. (INTERMASK)
+  000000B0            00021         INTERMASK    EQU H'B0'
+Warning[207]: Found label after column 1. (INTERBASE)
+  0000003D            00022         INTERBASE        EQU H'3D'
+Warning[207]: Found label after column 1. (OVERFLOW)
+  00000009            00023         OVERFLOW         EQU H'09'
+Warning[207]: Found label after column 1. (OVERFLOWFFF)
+  0000000A            00024         OVERFLOWFFF  EQU H'0A'
+                      00025 
+                      00026         CBLOCK 0x0C                                     ; debut de la zone variables
+                      00027         
+  0000000C            00028         w_temp          : 1                             
+  0000000D            00029         status_temp : 1 
+  0000000E            00030         compt           : 1
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  0000000F            00031         uni             : 1
+  00000010            00032         diz             : 1
+  00000011            00033         cen                     : 1     
+  00000012            00034         mill            : 1
+  00000013            00035         for                     : 1
+  00000014            00036         unite           : 1
+  00000015            00037         dizie           : 1
+  00000016            00038         cente           : 1
+  00000017            00039         tempoc          : 1
+                      00040         ENDC                                    ; Fin de la zone    
+                      00041 
+                      00042 ;**********************************************************************
+                      00043 ;                      DEMARRAGE SUR RESET                            *
+                      00044 ;**********************************************************************
+                      00045 
+0000                  00046         org     0x000                   ; Adresse de depart apres reset
+0000   285A           00047         goto    init                    ; Adresse 0: initialiser
+                      00048 
+                      00049 ;**********************************************************************
+                      00050 ;                      REGIME DINTERUPTION                            *
+                      00051 ;**********************************************************************
+                      00052 
+0004                  00053         org             0x004
+0004   008C           00054         movwf   w_temp
+0005   0E03           00055         swapf   STATUS,w
+0006   008D           00056         movwf   status_temp
+                      00057 
+0007   200D           00058         call    inter
+                      00059         
+0008   0E0D           00060         swapf   status_temp,w
+0009   0083           00061         movwf   STATUS
+000A   0E8C           00062         swapf   w_temp,f
+000B   0E0C           00063         swapf   w_temp,w
+000C   0009           00064         retfie
+                      00065 
+000D                  00066 inter
+000D   1D0B           00067         btfss   INTCON,2
+000E   284A           00068         goto    interRB0
+000F   2810           00069         goto    intertmr0
+                      00070         
+0010                  00071 intertmr0
+0010   110B           00072         bcf             INTCON,2
+0011   0A8E           00073         INCF    compt,f
+0012   080E           00074         movf    compt,w
+0013   3C3D           00075         sublw   INTERBASE
+0014   1D03           00076         btfss   STATUS,2
+0015   0008           00077         return
+0016   018E           00078         clrf    compt
+0017   0192           00079         clrf    mill
+0018   080F           00080         movf    uni,w
+0019   0094           00081         movwf   unite
+001A   0810           00082         movf    diz,w
+001B   0095           00083         movwf   dizie
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001C   0811           00084         movf    cen,w
+001D   0096           00085         movwf   cente
+                      00086         
+001E   3005           00087         movlw   .5
+001F   0093           00088         movwf   for
+0020                  00089 boucle
+0020   0814           00090         movf    unite,w
+0021   078F           00091         addwf   uni,f
+0022   080F           00092         movf    uni,w
+0023   3C09           00093         sublw   .9
+0024   1C03           00094         btfss   STATUS,0
+0025   2070           00095         call    carrydizi
+0026   0815           00096         movf    dizie,w
+0027   0790           00097         addwf   diz,f
+0028   0810           00098         movf    diz,w
+0029   3C09           00099         sublw   .9
+002A   1C03           00100         btfss   STATUS,0
+002B   2074           00101         call    carrycent
+002C   0816           00102         movf    cente,w
+002D   0791           00103         addwf   cen,f
+002E   0811           00104         movf    cen,w
+                      00105 
+002F   3001           00106         movlw   .1
+0030   0081           00107         movwf   TMR0
+0031   0B93           00108         decfsz  for,f
+0032   2820           00109         goto    boucle
+                      00110 
+0033   0194           00111         clrf    unite
+0034   080F           00112         movf    uni,w
+0035   0095           00113         movwf   dizie
+0036   0810           00114         movf    diz,w
+0037   0096           00115         movwf   cente
+0038   0811           00116         movf    cen,w
+0039   0092           00117         movwf   mill
+003A   018F           00118         clrf    uni
+003B   0190           00119         clrf    diz
+003C   0191           00120         clrf    cen
+                      00121                 
+003D   0812           00122         movf    mill,w
+003E   3C09           00123         sublw   OVERFLOW
+003F   1803           00124         btfsc   STATUS,C
+0040   0008           00125         return
+0041   300A           00126         movlw   OVERFLOWFFF
+0042   0094           00127         movwf   unite
+0043   300A           00128         movlw   OVERFLOWFFF
+0044   0095           00129         movwf   dizie
+0045   300A           00130         movlw   OVERFLOWFFF
+0046   0096           00131         movwf   cente
+0047   300A           00132         movlw   OVERFLOWFFF
+0048   0092           00133         movwf   mill
+0049   0008           00134         return
+                      00135         
+004A                  00136 interRB0
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004A   2078           00137         call    tempo
+004B   108B           00138         bcf             INTCON,1
+004C   0A8F           00139         incf    uni,f
+004D   080F           00140         movf    uni,w
+004E   3C09           00141         sublw   OVERFLOW
+004F   1803           00142         btfsc   STATUS,C
+0050   0008           00143         return
+0051   018F           00144         clrf    uni
+Message[305]: Using default destination of 1 (file).
+0052   0A90           00145         incf    diz
+0053   0810           00146         movf    diz,w
+0054   3C09           00147         sublw   OVERFLOW
+0055   1803           00148         btfsc   STATUS,C
+0056   0008           00149         return
+0057   0190           00150         clrf    diz
+Message[305]: Using default destination of 1 (file).
+0058   0A91           00151         incf    cen
+0059   0008           00152         return
+                      00153         
+                      00154         
+                      00155 
+                      00156 ;*********************************************************************
+                      00157 ;                       Diminuer la consommation                     *
+                      00158 ;*********************************************************************  
+                      00159 
+005A                  00160 init
+005A   0189           00161         clrf    EEADR                           ; permet de diminuer la consommation
+005B   1683           00162         bsf             STATUS,RP0                      ; sélectionner banque 1
+005C   3005           00163         movlw   OPTIONVAL                       ; charger masque
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+005D   0081           00164         movwf   OPTION_REG                      ; initialiser registre option
+005E   300C           00165         movlw   0x0c                            ; initialisation pointeur
+005F   0084           00166         movwf   FSR                                     ; pointeur d'adressage indirec
+                      00167 
+                      00168 ;*********************************************************************
+                      00169 ;                         EFFACEER LA RAM                            *
+                      00170 ;*********************************************************************
+                      00171 
+0060                  00172 init1
+0060   0180           00173         clrf    INDF                            ; effacer ram
+0061   0A84           00174         incf    FSR,f                           ; pointer sur suivant
+0062   1F04           00175         btfss   FSR,6                           ; tester si fin zone atteinte (>=40)
+0063   2860           00176         goto    init1                           ; non, boucler
+0064   1E04           00177         btfss   FSR,4                           ; tester si fin zone atteinte (>=50)
+0065   2860           00178         goto    init1                           ; non, boucler
+                      00179                                                                 ; sauter au programme principal
+0066   30B0           00180         movlw   INTERMASK
+0067   008B           00181         movwf   INTCON
+0068   1683           00182         bsf             STATUS,5
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0069   0186           00183         clrf    TRISB
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+006A   1406           00184         bsf             TRISB,0
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+006B   0185           00185         clrf    TRISA   
+006C   1283           00186         bcf     STATUS,5
+006D   30FF           00187         movlw   0xFF
+006E   0085           00188         movwf   PORTA
+006F   288D           00189         goto    START
+                      00190 
+0070                  00191 carrydizi       
+0070   300A           00192         movlw   .10
+0071   028F           00193         subwf   uni,f   
+0072   0A90           00194         incf    diz,f
+0073   0008           00195         return
+0074                  00196 carrycent
+0074   300A           00197         movlw   .10
+0075   0290           00198         subwf   diz,f   
+0076   0A91           00199         incf    cen,f
+0077   0008           00200         return
+                      00201 
+0078                  00202 tempo
+0078   3096           00203         movlw   .150
+0079   0097           00204         movwf   tempoc
+007A                  00205 temp
+Message[305]: Using default destination of 1 (file).
+007A   0B97           00206         decfsz  tempoc
+007B   287A           00207         goto    temp
+007C   0008           00208         return
+                      00209 
+                      00210 
+                      00211 
+                      00212 ;*********************************************************************
+                      00213 ;            LA ZONE DE CODAGE-CONVERTIR DE DECIMAL A 7SEG           *
+                      00214 ;*********************************************************************
+007D                  00215 CONVERT_7SEG    
+                      00216 
+007D   0782           00217     addwf       PCL,f
+007E   34FC           00218     retlw       B'11111100'     ;return "0" en 7segment C.C
+007F   3460           00219         retlw   B'01100000'             ;return "1" en 7segment
+0080   34DA           00220         retlw   B'11011010'             ;return "2" en 7segment
+0081   34F2           00221         retlw   B'11110010'             ;return "3" en 7segment
+0082   3466           00222         retlw   B'01100110'             ;return "4" en 7segment
+0083   34B6           00223         retlw   B'10110110'             ;return "5" en 7segment
+0084   34BE           00224         retlw   B'10111110'             ;return "6" en 7segment
+0085   34E0           00225         retlw   B'11100000'             ;return "7" en 7segment
+0086   34FE           00226         retlw   B'11111110'             ;return "8" en 7segment
+0087   34F6           00227         retlw   B'11110110'             ;return "9" en 7segment
+0088   348E           00228         retlw   B'10001110'             ;return "F"     en 7segment
+0089   349C           00229         retlw   B'10011100'             ;return "C" en 7segment
+008A   34EE           00230         retlw   B'11101110'             ;return "A" en 7segment
+008B   341C           00231         retlw   B'00011100'             ;return "L" en 7segment
+                      00232         
+                      00233         
+                      00234         ;retlw  B'01111110'     ;return "0" en 7segment C.C
+                      00235         ;retlw  B'00001100'             ;return "1" en 7segment
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00236 ;       retlw   B'10110110'             ;return "2" en 7segment
+                      00237 ;       retlw   B'10011110'             ;return "3" en 7segment
+                      00238 ;       retlw   B'11001100'             ;return "4" en 7segment
+                      00239 ;       retlw   B'11011010'             ;return "5" en 7segment
+                      00240 ;       retlw   B'11111010'             ;return "6" en 7segment
+                      00241 ;       retlw   B'00001110'             ;return "7" en 7segment
+                      00242 ;       retlw   B'11111110'             ;return "8" en 7segment
+                      00243 ;;      retlw   B'11011110'             ;return "9" en 7segment
+                      00244 ;       retlw   B'11100010'             ;return "F"     en 7segment
+                      00245 ;       retlw   B'01110010'             ;return "C" en 7segment
+                      00246 ;       retlw   B'11101110'             ;return "A" en 7segment
+                      00247 ;       retlw   B'01110000'             ;return "L" en 7segment
+008C   0008           00248         return
+                      00249 ;*********************************************************************
+                      00250 ;                         PROGRAMME PRINCIPALE                       *
+                      00251 ;*********************************************************************
+                      00252 
+                      00253 
+008D                  00254 START   
+008D   300B           00255         movlw   .11
+008E   0094           00256         movwf   unite
+008F   300D           00257         movlw   .13
+0090   0095           00258         movwf   dizie
+0091   300C           00259         movlw   .12
+0092   0096           00260         movwf   cente
+0093   300B           00261         movlw   .11
+0094   0092           00262         movwf   mill
+0095                  00263 slee    
+                      00264         ;leep
+0095                  00265 START2  
+0095   0814           00266         movf    unite,w
+0096   207D           00267         call    CONVERT_7SEG
+0097   0086           00268         movwf   PORTB
+0098   1005           00269         BCF             PORTA,0
+0099   1405           00270         BSF             PORTA,0 
+009A   0815           00271         movf    dizie,w
+009B   207D           00272         call    CONVERT_7SEG
+009C   0086           00273         movwf   PORTB
+009D   1085           00274         BCF             PORTA,1
+009E   1485           00275         BSF             PORTA,1 
+009F   0816           00276         movf    cente,w
+00A0   207D           00277         call    CONVERT_7SEG
+00A1   0086           00278         movwf   PORTB
+00A2   1105           00279         BCF             PORTA,2
+00A3   1505           00280         BSF             PORTA,2
+00A4   0812           00281         movf    mill,w
+00A5   207D           00282         call    CONVERT_7SEG
+00A6   0086           00283         movwf   PORTB
+00A7   1185           00284         BCF             PORTA,3
+00A8   1585           00285         BSF             PORTA,3
+                      00286         
+                      00287         ;ovf    compt,w
+                      00288         ;ublw   INTERBASE
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00289         ;tfss   STATUS,2
+                      00290         ;ggyuyuuyT2
+                      00291         ;mf     unit,f
+                      00292         ;btfss  STATUS,2
+00A9   2895           00293         goto    START2
+                      00294         ;goto   slee
+                      00295         END
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+CONVERT_7SEG                      0000007D
+DC                                00000001
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTERBASE                         0000003D
+INTERMASK                         000000B0
+INTF                              00000001
+IRP                               00000007
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTIONVAL                         00000005
+OPTION_REG                        00000081
+OVERFLOW                          00000009
+OVERFLOWFFF                       0000000A
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+START                             0000008D
+START2                            00000095
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_CONFIG                           00002007
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84                           00000001
+__DEBUG                           1
+MPASM  5.50                       TPARMIN.ASM   1-25-2020  3:58:30         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+boucle                            00000020
+carrycent                         00000074
+carrydizi                         00000070
+cen                               00000011
+cente                             00000016
+compt                             0000000E
+diz                               00000010
+dizie                             00000015
+for                               00000013
+init                              0000005A
+init1                             00000060
+inter                             0000000D
+interRB0                          0000004A
+intertmr0                         00000010
+mill                              00000012
+slee                              00000095
+status_temp                       0000000D
+temp                              0000007A
+tempo                             00000078
+tempoc                            00000017
+uni                               0000000F
+unite                             00000014
+w_temp                            0000000C
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXX------ ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   167
+Program Memory Words Free:   857
+
+
+Errors   :     0
+Warnings :     5 reported,     0 suppressed
+Messages :     7 reported,     0 suppressed
+
+
